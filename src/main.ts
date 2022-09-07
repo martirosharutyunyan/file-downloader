@@ -28,7 +28,7 @@ bot.on('message', (msg) => {
             const file = fs.readFileSync(path);
             await bot.sendVideo(msg.chat.id, file)
             try {
-                fs.unlinkSync(path+'fds');
+                fs.unlinkSync(path);
             } catch (e) {
                 console.log(e)
             }
