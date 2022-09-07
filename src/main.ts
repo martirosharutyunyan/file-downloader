@@ -21,10 +21,14 @@ bot.on('message', (msg) => {
         adapter.get(url, (res) => {
             // Image will be stored at this path
             const path = `./files/${fileName}`;
-            const filePath = fs.createWriteStream(path);
-            res.pipe(filePath);
-            filePath.on('finish',async () => {
-                filePath.close();
+            const fileStream = fs.createWriteStream(path);
+            
+            res.pipe(fileStream);
+            res.on('data', (chunk) => {
+                console.log(chunk);
+            })
+            fileStream.on('finish',async () => {
+                fileStream.close();
                 console.log('Download Completed');
                 const file = fs.readFileSync(path);
                 await bot.sendVideo(msg.chat.id, file)
