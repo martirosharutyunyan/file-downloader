@@ -30,6 +30,7 @@ bot.on('message', (msg) => {
             fileStream.on('finish',async () => {
                 fileStream.close();
                 console.log('Download Completed');
+                await bot.sendMessage(msg.chat.id, 'Download Completed');
                 const file = fs.readFileSync(path);
                 await bot.sendVideo(msg.chat.id, file)
                 try {
