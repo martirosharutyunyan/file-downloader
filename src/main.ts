@@ -24,14 +24,11 @@ bot.on('message', (msg) => {
             const fileStream = fs.createWriteStream(path);
             
             res.pipe(fileStream);
-            res.on('data', (chunk) => {
-                console.log(chunk);
-            })
             fileStream.on('finish',async () => {
                 fileStream.close();
                 console.log('Download Completed');
                 await bot.sendMessage(msg.chat.id, 'Download Completed');
-                const file = fs.readFileSync(path);
+                const file = fs.createReadStream(path);
                 await bot.sendVideo(msg.chat.id, file)
                 try {
                     fs.unlinkSync(path);
