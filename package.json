@@ -2,7 +2,7 @@
   "name": "file-downloader",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/main.js",
   "scripts": {
     "start": "node dist/main.js",
     "watch": "nodemon --config nodemon.json",
@@ -12,12 +12,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/node": "^18.7.15",
     "dotenv": "^16.0.2",
     "node-telegram-bot-api": "^0.59.0",
     "typescript": "^4.8.2"
   },
   "devDependencies": {
-    "@types/node": "^18.7.15",
     "@types/node-telegram-bot-api": "^0.57.1",
     "nodemon": "^2.0.19"
   }
