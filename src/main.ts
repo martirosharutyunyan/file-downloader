@@ -1,13 +1,13 @@
 import fs from 'fs';
 import http from 'http';
 import https from 'https';
-import dotenv from 'dotenv'
-import TelegramBot from 'node-telegram-bot-api'
+import dotenv from 'dotenv';
+import TelegramBot from 'node-telegram-bot-api';
 
 dotenv.config();
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const userId = Number(process.env.USER_ID!);
-const bot = new TelegramBot(BOT_TOKEN!, { baseApiUrl: 'http:/0.0.0.0:8081/bot' });
+const bot = new TelegramBot(BOT_TOKEN!, { baseApiUrl: 'http://0.0.0.0:8081/bot' });
 
 bot.on('message', (msg) => {
     try {
@@ -22,7 +22,7 @@ bot.on('message', (msg) => {
             // Image will be stored at this path
             const path = `./files/${fileName}`;
             const fileStream = fs.createWriteStream(path);
-            
+
             res.pipe(fileStream);
             fileStream.on('finish',async () => {
                 fileStream.close();
