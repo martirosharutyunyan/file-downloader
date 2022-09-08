@@ -7,7 +7,7 @@ import TelegramBot from 'node-telegram-bot-api'
 dotenv.config();
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const userId = Number(process.env.USER_ID!);
-const bot = new TelegramBot(BOT_TOKEN!);
+const bot = new TelegramBot(BOT_TOKEN!, { baseApiUrl: 'http:/0.0.0.0:8081/bot' });
 
 bot.on('message', (msg) => {
     try {
