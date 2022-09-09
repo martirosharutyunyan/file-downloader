@@ -3,11 +3,12 @@ import http from 'http';
 import https from 'https';
 import dotenv from 'dotenv';
 import TelegramBot from 'node-telegram-bot-api';
+import splitFile from 'split-file';
 
 dotenv.config();
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const userId = Number(process.env.USER_ID!);
-const bot = new TelegramBot(BOT_TOKEN!, { baseApiUrl: 'http://0.0.0.0:8081/bot' });
+const bot = new TelegramBot(BOT_TOKEN!);
 
 bot.on('message', (msg) => {
     try {
@@ -28,12 +29,16 @@ bot.on('message', (msg) => {
                 fileStream.close();
                 console.log('Download Completed');
                 await bot.sendMessage(msg.chat.id, 'Download Completed');
-                const file = fs.createReadStream(path);
-                await bot.sendVideo(msg.chat.id, file)
-                try {
-                    fs.unlinkSync(path);
-                } catch (e) {
-                    console.log(e)
+                const files = await splitFile.splitFileBySize(path, 45 * 1024 * 1024);
+                for (const [index, filePathWithParts] of files.entries()) {
+                    const filePath = filePathWithParts.split('.mp4')[0] + index + '.mp4';
+                    fs.renameSync(filePathWithParts, filePath);
+                    const file = fs.createReadStream(filePath);
+                    await bot.sendVideo(msg.chat.id, file);
+                }
+                const allFiles = fs.readdirSync('./files');
+                for (const file of allFiles) {
+                    fs.unlink(file, console.log);
                 }
             })
         })
