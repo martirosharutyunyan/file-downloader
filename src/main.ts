@@ -4,6 +4,7 @@ import https from 'https';
 import dotenv from 'dotenv';
 import TelegramBot from 'node-telegram-bot-api';
 import splitFile from 'split-file';
+import fsExtra from 'fs-extra';
 
 dotenv.config();
 const BOT_TOKEN = process.env.BOT_TOKEN;
@@ -15,7 +16,7 @@ bot.on('message', (msg) => {
         if (msg.chat.id !== userId) {
             return;
         }
-        const url = msg.text!.split('?')[0];
+        const url = msg.text!;
         const paths = url.split('/');
         const fileName = paths[paths.length - 1];
         const adapter = url.startsWith('https') ? https: http;
@@ -29,23 +30,21 @@ bot.on('message', (msg) => {
                 fileStream.close();
                 console.log('Download Completed');
                 await bot.sendMessage(msg.chat.id, 'Download Completed');
-                const files = await splitFile.splitFileBySize(path, 45 * 1024 * 1024);
+                const files = await splitFile.splitFileBySize(path, 48 * 1024 * 1024);
                 for (const [index, filePathWithParts] of files.entries()) {
                     const filePath = filePathWithParts.split('.mp4')[0] + index + '.mp4';
                     fs.renameSync(filePathWithParts, filePath);
                     const file = fs.createReadStream(filePath);
                     await bot.sendVideo(msg.chat.id, file);
                 }
-                const allFiles = fs.readdirSync('./files');
-                for (const file of allFiles) {
-                    fs.unlink(file, console.log);
-                }
+                fsExtra.emptyDirSync('./files');
             })
         })
     } catch (e) {
         console.log(e);
     }
 })
+
 
 void bot.startPolling();
 console.log("Bot Started");
