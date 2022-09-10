@@ -18,14 +18,11 @@ bot.on('message', (msg) => {
         }
         const url = msg.text!;
         const paths = url.split('/');
-        const fileName = paths[paths.length - 1];
+        const urlBasePath = paths[paths.length - 1];
+        const optionIndex = urlBasePath.indexOf('?');
+        const fileName = urlLastPath.slice(0, optionIndex);
         const adapter = url.startsWith('https') ? https: http;
         adapter.get(url, (res) => {
-            if (res.statusCode! >= 400) {
-                void bot.sendMessage(msg.chat.id, 'Failed');
-                return;
-            }
-            // Image will be stored at this path
             const path = `./files/${fileName}`;
             const fileStream = fs.createWriteStream(path);
 
