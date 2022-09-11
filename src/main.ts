@@ -39,7 +39,9 @@ bot.on('message', (msg) => {
                     await bot.sendVideo(msg.chat.id, file);
                 }
                 fsExtra.emptyDirSync('./files');
-            })
+            });
+            
+            await bot.sendMessage(msg.chat.id, 'Upload completed');
         })
     } catch (e) {
         console.log(e);
