@@ -22,7 +22,7 @@ bot.on('message', (msg) => {
         const optionIndex = urlBasePath.indexOf('?');
         const fileName = urlBasePath.slice(0, optionIndex);
         const adapter = url.startsWith('https') ? https: http;
-        adapter.get(url, (res) => {
+        adapter.get(url, async (res) => {
             const path = `./files/${fileName}`;
             const fileStream = fs.createWriteStream(path);
 
@@ -40,7 +40,7 @@ bot.on('message', (msg) => {
                 }
                 fsExtra.emptyDirSync('./files');
             });
-            
+
             await bot.sendMessage(msg.chat.id, 'Upload completed');
         })
     } catch (e) {
