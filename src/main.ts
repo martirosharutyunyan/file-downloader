@@ -3,13 +3,12 @@ import http from 'http';
 import https from 'https';
 import dotenv from 'dotenv';
 import TelegramBot from 'node-telegram-bot-api';
-import splitFile from 'split-file';
-import fsExtra from 'fs-extra';
 
 dotenv.config();
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const userId = Number(process.env.USER_ID!);
-const bot = new TelegramBot(BOT_TOKEN!);
+const TELEGRAM_BASE_URL = process.env.TELEGRAM_BASE_URL
+const bot = new TelegramBot(BOT_TOKEN!, { baseApiUrl: TELEGRAM_BASE_URL });
 
 bot.on('message', (msg) => {
     try {
@@ -31,15 +30,9 @@ bot.on('message', (msg) => {
                 fileStream.close();
                 console.log('Download Completed');
                 await bot.sendMessage(msg.chat.id, 'Download Completed');
-                const files = await splitFile.splitFileBySize(path, 48 * 1024 * 1024);
-                for (const [index, filePathWithParts] of files.entries()) {
-                    const filePath = filePathWithParts.split('.mp4')[0] + index + '.mp4';
-                    fs.renameSync(filePathWithParts, filePath);
-                    const file = fs.createReadStream(filePath);
-                    await bot.sendVideo(msg.chat.id, file);
-                }
-                fsExtra.emptyDirSync('./files');
-                await bot.sendMessage(msg.chat.id, 'Upload completed');
+                const readStream = fs.createReadStream(path);
+                await bot.sendVideo(msg.chat.id, readStream);
+                fs.unlink(path, console.log);
             });
         })
     } catch (e) {
