@@ -34,12 +34,10 @@ bot.on('message', (msg) => {
                 await bot.sendVideo(msg.chat.id, readStream);
                 fs.unlink(path, console.log);
             });
-        })
+        });
     } catch (e) {
         console.log(e);
     }
 })
 
-
-void bot.startPolling();
-console.log("Bot Started");
+bot.startPolling().then(() => console.log("Bot Started")).catch(() => console.error("Error cant connect"));
