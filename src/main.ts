@@ -5,13 +5,13 @@ import http from 'http';
 import https from 'https';
 import TelegramBot from 'node-telegram-bot-api';
 
-import {UserEntity} from './user.entity';
+import { UserEntity } from './user.entity';
 
 dotenv.config();
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const PASSWORD_HASH = process.env.PASSWORD_HASH!;
 const TELEGRAM_BASE_URL = process.env.TELEGRAM_BASE_URL;
-const bot = new TelegramBot(BOT_TOKEN!, {baseApiUrl: TELEGRAM_BASE_URL});
+const bot = new TelegramBot(BOT_TOKEN!, { baseApiUrl: TELEGRAM_BASE_URL });
 
 const users: UserEntity[] = [];
 
@@ -57,6 +57,11 @@ bot.on('message', async (msg) => {
         adapter.get(url, (res) => {
             const path = `./files/${fileName}`;
             const fileStream = fs.createWriteStream(path);
+
+            if (res.statusCode >= 300) {
+                await bot.sendMessage(userId, `Failed code: ${res.statusCode}`)
+                return;
+            }
 
             res.pipe(fileStream);
             fileStream.on('finish', async () => {
