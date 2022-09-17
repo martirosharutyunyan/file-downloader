@@ -53,25 +53,29 @@ bot.on('message', async (msg) => {
     const optionIndex = urlBasePath.indexOf('?');
     const fileName = urlBasePath.slice(0, optionIndex);
     const adapter = url.startsWith('https') ? https : http;
-    adapter.get(url, (res) => {
-        const path = `./files/${fileName}`;
-        const fileStream = fs.createWriteStream(path);
+    try {
+        adapter.get(url, (res) => {
+            const path = `./files/${fileName}`;
+            const fileStream = fs.createWriteStream(path);
 
-        res.pipe(fileStream);
-        fileStream.on('finish', async () => {
-            fileStream.close();
-            console.log('Download Completed');
-            await bot.sendMessage(userId, 'Download Completed');
-            const readStream = fs.createReadStream(path);
-            await bot.sendVideo(userId, readStream);
+            res.pipe(fileStream);
+            fileStream.on('finish', async () => {
+                fileStream.close();
+                console.log('Download Completed');
+                await bot.sendMessage(userId, 'Download Completed');
+                const readStream = fs.createReadStream(path);
+                await bot.sendVideo(userId, readStream);
 
-            fs.unlink(path, (err) => {
-                if (err) {
-                    console.log(err);
-                }
+                fs.unlink(path, (err) => {
+                    if (err) {
+                        console.log(err);
+                    }
+                });
             });
-        });
-    });
+        })
+    } catch (err) {
+        await bot.sendMessage(userId, err.message);
+    }
 });
 
 bot
