@@ -55,13 +55,13 @@ bot.on('message', async (msg) => {
     const adapter = url.startsWith('https') ? https : http;
     try {
         adapter.get(url, (res) => {
-            const path = `./files/${fileName}`;
-            const fileStream = fs.createWriteStream(path);
-
             if (res.statusCode >= 300) {
                 await bot.sendMessage(userId, `Failed code: ${res.statusCode}`)
                 return;
             }
+            
+            const path = `./files/${fileName}`;
+            const fileStream = fs.createWriteStream(path);
 
             res.pipe(fileStream);
             fileStream.on('finish', async () => {
