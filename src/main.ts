@@ -55,7 +55,7 @@ bot.on('message', async (msg) => {
     const adapter = url.startsWith('https') ? https : http;
     try {
         adapter.get(url, async (res) => {
-            if (res.statusCode >= 300) {
+            if (res.statusCode! >= 300) {
                 await bot.sendMessage(userId, `Failed code: ${res.statusCode!}`)
                 return;
             }
