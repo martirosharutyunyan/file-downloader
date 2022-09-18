@@ -76,7 +76,7 @@ bot.on('message', async (msg) => {
                 downloadedSize += chunkSize;
                 if (getPercentage(downloadedSize, fileSize) >= percentage) {
                     await editMessageText(bot, `Downloaded: ${getPercentage(downloadedSize, fileSize)}%` , editMessageOptions);
-                    percentage += 10;
+                    percentage += 20;
                 }
             });
 
@@ -96,7 +96,7 @@ bot.on('message', async (msg) => {
 
                     if (getPercentage(uploadedSize, fileSize) >= percentage) {
                         await editMessageText(bot, `Uploaded: ${getPercentage(uploadedSize, fileSize)}%`, editMessageOptions);
-                        percentage += 10;
+                        percentage += 20;
                     }
                 });
                 await bot.sendVideo(userId, readStream);
