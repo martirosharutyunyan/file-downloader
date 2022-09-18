@@ -66,7 +66,7 @@ bot.on('message', async (msg) => {
             
             const fileSize = Number(res.headers['content-length']);
             let downloadedSize = 0;
-            let percentage = 10;
+            let percentage = 0;
             res.pipe(fileStream);
             const getPercentage = (downloadedSize, fileSize) => Math.floor((downloadedSize / fileSize) * 100);
             const message = await bot.sendMessage(userId, `Downloaded: ${getPercentage(downloadedSize, fileSize)}%`);
