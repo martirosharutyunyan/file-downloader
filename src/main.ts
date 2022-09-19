@@ -101,7 +101,7 @@ bot.on('message', async (msg) => {
                 });
                 await bot.sendVideo(userId, readStream).catch((err) => console.log(err.message));
                 await editMessageText(bot, 'Uploaded: 100%', editMessageOptions);
-                await bot.deleteMessage(userId, message.message_id.toString());
+                await bot.deleteMessage(userId, message.message_id.toString()).catch((err) => console.log(err.message));
                 fs.unlink(path, (err) => {
                     if (err) {
                         console.log(err);
