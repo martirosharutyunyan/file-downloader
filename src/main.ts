@@ -63,10 +63,10 @@ bot.on('message', async (msg) => {
 
             const path = `./files/${fileName}`;
             const fileStream = fs.createWriteStream(path);
-            
+
             const fileSize = Number(res.headers['content-length']);
             let downloadedSize = 0;
-            let percentage = 0;
+            let percentage = 10;
             res.pipe(fileStream);
             const getPercentage = (downloadedSize, fileSize) => Math.floor((downloadedSize / fileSize) * 100);
             const message = await bot.sendMessage(userId, `Downloaded: ${getPercentage(downloadedSize, fileSize)}%`);
@@ -86,10 +86,10 @@ bot.on('message', async (msg) => {
                 console.log('Download Completed');
                 await editMessageText(bot, 'Downloaded: 100%' , editMessageOptions);
                 await editMessageText(bot, 'Uploaded: 0%' , editMessageOptions);
-                
+
                 const readStream = fs.createReadStream(path);
                 let uploadedSize = 0;
-                let percentage = 0;
+                let percentage = 10;
                 readStream.on('data', async (chunk) => {
                     const chunkSize = Buffer.byteLength(chunk);
                     uploadedSize += chunkSize;
