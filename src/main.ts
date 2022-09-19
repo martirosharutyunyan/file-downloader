@@ -99,7 +99,7 @@ bot.on('message', async (msg) => {
                         percentage += 20;
                     }
                 });
-                await bot.sendVideo(userId, readStream);
+                await bot.sendVideo(userId, readStream).catch(() => console.log(err.message));
                 await editMessageText(bot, 'Uploaded: 100%', editMessageOptions);
                 await bot.deleteMessage(userId, message.message_id.toString());
                 fs.unlink(path, (err) => {
