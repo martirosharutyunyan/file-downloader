@@ -1,6 +1,7 @@
 import { Mutex } from 'async-mutex';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
+import axios from 'axios';
 import fs from 'fs';
 import http from 'http';
 import https from 'https';
@@ -54,9 +55,8 @@ bot.on('message', async (msg) => {
     const urlBasePath = paths[paths.length - 1];
     const optionIndex = urlBasePath.indexOf('?');
     const fileName = urlBasePath.slice(0, optionIndex);
-    const adapter = url.startsWith('https') ? https : http;
     try {
-        adapter.get(url, async (res) => {
+        axios.get(url, { responseType: 'blob' }, async (res) => {
             if (res.statusCode! >= 400) {
                 await bot.sendMessage(userId, `Failed code: ${res.statusCode!}`)
                 return;
