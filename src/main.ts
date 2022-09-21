@@ -62,7 +62,7 @@ bot.on('message', async (msg) => {
                 return;
             }
 
-            res.setTimeout(6000);
+            res.setTimeout(6000, async () => await bot.sendMessage(userId, "Timeout error") );
 
             const path = `./files/${fileName}`;
             const fileStream = fs.createWriteStream(path);
