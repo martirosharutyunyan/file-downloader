@@ -62,8 +62,6 @@ bot.on('message', async (msg) => {
                 return;
             }
 
-            res.setTimeout(6000, async () => await bot.sendMessage(userId, "Timeout error") );
-
             const path = `./files/${fileName}`;
             const fileStream = fs.createWriteStream(path);
 
@@ -79,7 +77,7 @@ bot.on('message', async (msg) => {
                 const release = await clientLock.acquire();
                 const chunkSize = Buffer.byteLength(chunk);
                 downloadedSize += chunkSize;
-
+                
                 if (getPercentage(downloadedSize, fileSize) >= percentage) {
                     await editMessageText(bot, `Downloaded: ${getPercentage(downloadedSize, fileSize)}%` , editMessageOptions);
                     percentage += 10;
