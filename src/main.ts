@@ -49,6 +49,8 @@ bot.on('message', async (msg) => {
         return;
     }
 
+    await bot.deleteMessage(userId, msg.message_id.toString());
+
     const url = msg.text!;
     const paths = url.split('/');
     const urlBasePath = paths[paths.length - 1];
