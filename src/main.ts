@@ -48,9 +48,7 @@ bot.on('message', async (msg) => {
         await bot.sendMessage(userId, 'Not Registered please write password');
         return;
     }
-
-    await bot.deleteMessage(userId, msg.message_id.toString());
-
+    
     const url = msg.text!;
     const paths = url.split('/');
     const urlBasePath = paths[paths.length - 1];
@@ -63,6 +61,7 @@ bot.on('message', async (msg) => {
                 await bot.sendMessage(userId, `Failed code: ${res.statusCode!}`)
                 return;
             }
+            await bot.deleteMessage(userId, msg.message_id.toString());
 
             const path = `./files/${fileName}`;
             const fileStream = fs.createWriteStream(path);
