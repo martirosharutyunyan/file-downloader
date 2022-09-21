@@ -79,7 +79,7 @@ bot.on('message', async (msg) => {
                 const release = await clientLock.acquire();
                 const chunkSize = Buffer.byteLength(chunk);
                 downloadedSize += chunkSize;
-                console.log(getPercentage(downloadedSize, fileSize), percentage);
+
                 if (getPercentage(downloadedSize, fileSize) >= percentage) {
                     await editMessageText(bot, `Downloaded: ${getPercentage(downloadedSize, fileSize)}%` , editMessageOptions);
                     percentage += 10;
