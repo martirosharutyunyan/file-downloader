@@ -1,3 +1,4 @@
+import { Mutex } from 'async-mutex';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import fs from 'fs';
@@ -66,18 +67,22 @@ bot.on('message', async (msg) => {
 
             const fileSize = Number(res.headers['content-length']);
             let downloadedSize = 0;
-            let percentage = 10;
+            let percentage = 0;
+            const clientLock = new Mutex();
             res.pipe(fileStream);
             const getPercentage = (downloadedSize, fileSize) => Math.floor((downloadedSize / fileSize) * 100);
             const message = await bot.sendMessage(userId, `Downloaded: ${getPercentage(downloadedSize, fileSize)}%`);
             const editMessageOptions = { message_id: message.message_id, chat_id: userId }
             res.on('data', async (chunk) => {
+                const release = await clientLock.acquire();
                 const chunkSize = Buffer.byteLength(chunk);
                 downloadedSize += chunkSize;
+                console.log(getPercentage(downloadedSize, fileSize), percentage);
                 if (getPercentage(downloadedSize, fileSize) >= percentage) {
                     await editMessageText(bot, `Downloaded: ${getPercentage(downloadedSize, fileSize)}%` , editMessageOptions);
-                    percentage += 20;
+                    percentage += 10;
                 }
+                release();
             });
 
             fileStream.on('finish', async () => {
@@ -89,15 +94,18 @@ bot.on('message', async (msg) => {
 
                 const readStream = fs.createReadStream(path);
                 let uploadedSize = 0;
-                let percentage = 10;
+                let percentage = 0;
+                const clientLock = new Mutex();
                 readStream.on('data', async (chunk) => {
+                    const release = await clientLock.acquire();
                     const chunkSize = Buffer.byteLength(chunk);
                     uploadedSize += chunkSize;
 
                     if (getPercentage(uploadedSize, fileSize) >= percentage) {
                         await editMessageText(bot, `Uploaded: ${getPercentage(uploadedSize, fileSize)}%`, editMessageOptions);
-                        percentage += 20;
+                        percentage += 10;
                     }
+                    release();
                 });
                 await bot.sendVideo(userId, readStream).catch((err) => console.log(err.message));
                 await editMessageText(bot, 'Uploaded: 100%', editMessageOptions);
