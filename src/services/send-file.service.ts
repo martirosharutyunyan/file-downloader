@@ -1,5 +1,5 @@
 import { WriteStream } from "fs";
-import TelegramBot, { EditMessageTextOptions } from "node-telegram-bot-api";
+import TelegramBot, { EditMessageTextOptions, InputMediaVideo } from "node-telegram-bot-api";
 import { MessageService } from "./message.service";
 import fs from 'fs';
 import { Mutex } from "async-mutex";
@@ -29,9 +29,10 @@ export class UploadFileService {
             }
             release();
         });
-        
-        // @ts-ignore
-        await bot.sendVideo(options.userId, readStream, { supports_streaming: true }).catch((err) => console.log(err.message));
+        const video: InputMediaVideo = { media: options.path, type: 'video', supports_streaming: true };
+        await bot.sendMediaGroup(options.userId, [video]);
+        // // @ts-ignore
+        // await bot.sendVideo(options.userId, readStream, { supports_streaming: true }).catch((err) => console.log(err.message));
         await MessageService.editText(bot, 'Uploaded: 100%', options.editMessageTextOptions);
         await MessageService.delete(bot, { userId: options.userId, messageId: options.editMessageTextOptions.message_id!.toString() }).catch((err) => console.log(err.message));
         FileDeletorSerice.video(options.path);
