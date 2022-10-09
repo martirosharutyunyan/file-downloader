@@ -10,7 +10,7 @@ export class Screenshoter {
         return new Promise((res) => {
             let filenames: string[];
             ffmpeg(path).takeScreenshots({
-                count: 4,
+                count: 2,
                 filename: `${fileName}thumbnail-at-%s-seconds.jpeg`,
             }, './files/photos')
                 .on('error', console.log)
