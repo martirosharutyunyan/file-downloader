@@ -40,7 +40,7 @@ export class SendFileService {
         });
         const screenShotStartDate = new Date();
         const screenshotFiles = await Screenshoter.take(options.path, options.fileName, options.count);
-        console.log(`Screenshots done ${(+new Date() - +screenShotStartDate) / 1000}s`)
+        console.log(`Screenshots done ${(+new Date() - +screenShotStartDate) / 1000}s`);
         const mediaGroup: InputMedia[] = [];
         for (const screenshotFile of screenshotFiles) {
             mediaGroup.push({
@@ -48,8 +48,7 @@ export class SendFileService {
                 media: `./files/photos/${screenshotFile}`,
             });
         };
-        // @ts-ignore
-        const video: InputMediaVideo = { media: options.path, type: 'video', supports_streaming: true, thumb: `./files/photos/${screenshotFiles[0]}` };
+        const video: InputMediaVideo = { media: options.path, type: 'video', supports_streaming: true };
         mediaGroup.push(video);
         await bot.sendMediaGroup(options.userId, mediaGroup);
         await MessageService.editText(bot, 'Uploaded: 100%', options.editMessageTextOptions);

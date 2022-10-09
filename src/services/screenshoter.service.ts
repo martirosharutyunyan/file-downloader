@@ -11,7 +11,6 @@ export class Screenshoter {
             let filenames: string[];
             ffmpeg(path).screenshots({
                 count,
-                size: '320x240',
                 filename: `${fileName}thumbnail-at-%s-seconds.jpeg`,
             }, './files/photos')
                 .on('error', console.log)

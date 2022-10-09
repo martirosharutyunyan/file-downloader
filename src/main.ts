@@ -73,7 +73,7 @@ bot.on('message', async (msg) => {
                 path,
                 editMessageTextOptions,
                 downloadStartDate,
-                count,
+                count: count ?? 1,
             }));
         }).on('error', console.log)
     } catch (err) {
