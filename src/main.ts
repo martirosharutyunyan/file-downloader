@@ -5,8 +5,10 @@ import fs from 'fs';
 import http from 'http';
 import https from 'https';
 import TelegramBot from 'node-telegram-bot-api';
-
-import { UserEntity } from './user.entity';
+import ffmpeg from 'fluent-ffmpeg';
+import { UserEntity } from './entities/user.entity';
+import { DownloadFileService } from './services/download-file.service';
+import { UploadFileService } from './services/send-file.service';
 
 dotenv.config();
 const BOT_TOKEN = process.env.BOT_TOKEN;
@@ -48,7 +50,7 @@ bot.on('message', async (msg) => {
         await bot.sendMessage(userId, 'Not Registered please write password');
         return;
     }
-    
+
     const url = msg.text!;
     const paths = url.split('/');
     const urlBasePath = paths[paths.length - 1];
@@ -63,61 +65,9 @@ bot.on('message', async (msg) => {
             }
             await bot.deleteMessage(userId, msg.message_id.toString());
 
-            const path = `./files/${fileName}`;
-            const fileStream = fs.createWriteStream(path);
-
-            const fileSize = Number(res.headers['content-length']);
-            let downloadedSize = 0;
-            let percentage = 0;
-            const clientLock = new Mutex();
-            res.pipe(fileStream);
-            const getPercentage = (downloadedSize, fileSize) => Math.floor((downloadedSize / fileSize) * 100);
-            const message = await bot.sendMessage(userId, `Downloaded: ${getPercentage(downloadedSize, fileSize)}%`);
-            const editMessageOptions = { message_id: message.message_id, chat_id: userId }
-            res.on('data', async (chunk) => {
-                const release = await clientLock.acquire();
-                const chunkSize = Buffer.byteLength(chunk);
-                downloadedSize += chunkSize;
-                
-                if (getPercentage(downloadedSize, fileSize) >= percentage) {
-                    await editMessageText(bot, `Downloaded: ${getPercentage(downloadedSize, fileSize)}%` , editMessageOptions);
-                    percentage += 10;
-                }
-                release();
-            });
-
-            fileStream.on('finish', async () => {
-                fileStream.close();
-
-                console.log('Download Completed: ', fileName);
-                await editMessageText(bot, 'Downloaded: 100%' , editMessageOptions);
-                await editMessageText(bot, 'Uploaded: 0%' , editMessageOptions);
-
-                const readStream = fs.createReadStream(path);
-                let uploadedSize = 0;
-                let percentage = 0;
-                const clientLock = new Mutex();
-                readStream.on('data', async (chunk) => {
-                    const release = await clientLock.acquire();
-                    const chunkSize = Buffer.byteLength(chunk);
-                    uploadedSize += chunkSize;
-
-                    if (getPercentage(uploadedSize, fileSize) >= percentage) {
-                        await editMessageText(bot, `Uploaded: ${getPercentage(uploadedSize, fileSize)}%`, editMessageOptions);
-                        percentage += 10;
-                    }
-                    release();
-                });
-                // @ts-ignore
-                await bot.sendVideo(userId, readStream, { supports_streaming: true }, { filename: fileName, contentType: '' }).catch((err) => console.log(err.message));
-                await editMessageText(bot, 'Uploaded: 100%', editMessageOptions);
-                await bot.deleteMessage(userId, message.message_id.toString()).catch((err) => console.log(err.message));
-                fs.unlink(path, (err) => {
-                    if (err) {
-                        console.log(err);
-                    }
-                });
-            });
+            const path = `./files/videos/${fileName}`;
+            const { fileStream, fileSize, editMessageTextOptions } = await DownloadFileService.download(bot, res, { fileName, userId });
+            fileStream.on('finish', () => UploadFileService.upload(fileStream, bot, { fileName, fileSize, userId, path, editMessageTextOptions }));
         })
     } catch (err) {
         await bot.sendMessage(userId, err.message);
@@ -128,8 +78,3 @@ bot
     .startPolling()
     .then(() => console.log('Bot Started'))
     .catch(() => console.error('Error cant connect'));
-
-
-const editMessageText = async (bot: TelegramBot, messageText: string, options: TelegramBot.EditMessageTextOptions) => {
-    await bot.editMessageText(messageText, options).catch(() => {});
-}
