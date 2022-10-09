@@ -65,7 +65,7 @@ bot.on('message', async (msg) => {
             const path = `./files/videos/${fileName}`;
             const { fileStream, fileSize, editMessageTextOptions } = await DownloadFileService.download(bot, res, { fileName, userId });
             fileStream.on('finish', () => UploadFileService.upload(fileStream, bot, { fileName, fileSize, userId, path, editMessageTextOptions }));
-        })
+        }).on('error', console.log)
     } catch (err) {
         await bot.sendMessage(userId, err.message);
     }

@@ -13,7 +13,7 @@ export class FileDeletorSerice {
 
     static photos(filepaths: string[]): void {
         for(const filepath of filepaths) {
-            fs.unlink(`../../files/photos/${filepath}`, FileDeletorSerice.errorHandler);
+            fs.unlink(`./files/photos/${filepath}`, FileDeletorSerice.errorHandler);
         };
     }
 }

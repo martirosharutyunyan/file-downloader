@@ -3,7 +3,6 @@ import ffmpegInstaller from '@ffmpeg-installer/ffmpeg';
 import ffprobeInstaller from '@ffprobe-installer/ffprobe';
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 ffmpeg.setFfprobePath(ffprobeInstaller.path)
-const cwd = process.cwd();
 
 
 export class Screenshoter {
@@ -12,8 +11,8 @@ export class Screenshoter {
             let filenames: string[];
             ffmpeg(path).takeScreenshots({
                 count: 4,
-                filename: `${fileName}thumbnail-at-%s-seconds.png`,
-            },`${cwd}/files/photos`)
+                filename: `${fileName}thumbnail-at-%s-seconds.jpeg`,
+            }, './files/photos')
                 .on('error', rej)
                 .on('filenames', (files) => {
                     filenames = files;

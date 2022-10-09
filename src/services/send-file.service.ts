@@ -1,8 +1,8 @@
 import { WriteStream } from "fs";
+import { Mutex } from "async-mutex";
+import fs from 'fs';
 import TelegramBot, { EditMessageTextOptions, InputMedia, InputMediaPhoto, InputMediaVideo } from "node-telegram-bot-api";
 import { MessageService } from "./message.service";
-import fs from 'fs';
-import { Mutex } from "async-mutex";
 import { PercentageService } from "./percentage.service";
 import { FileDeletorSerice } from "./file-deletor.service";
 import { Screenshoter } from "./screenshoter.service";
@@ -35,7 +35,7 @@ export class UploadFileService {
         for(const screenshotFile of screenshotFiles) {
             mediaGroup.push({
                 type: 'photo',
-                media: screenshotFile,
+                media: `./files/photos/${screenshotFile}`,
             });
         };
         const video: InputMediaVideo = { media: options.path, type: 'video', supports_streaming: true };
