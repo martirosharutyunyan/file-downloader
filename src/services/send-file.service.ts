@@ -5,7 +5,7 @@ import fs from 'fs';
 import { Mutex } from "async-mutex";
 import { PercentageService } from "./percentage.service";
 import { FileDeletorSerice } from "./file-deletor.service";
-import { Screenshoter } from "./screenshoter.sevice";
+import { Screenshoter } from "./screenshoter.service";
 
 export class UploadFileService {
     static async upload(fileStream: WriteStream, bot: TelegramBot, options: { fileName: string, userId: number, path: string, fileSize: number, editMessageTextOptions: EditMessageTextOptions }): Promise<void> {
