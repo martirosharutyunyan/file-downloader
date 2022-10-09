@@ -48,7 +48,8 @@ bot.on('message', async (msg) => {
         return;
     }
 
-    const url = msg.text!;
+    const url = msg.text!.split(' ')[0];
+    const count = +msg.text!.split(' ')[1];
     const paths = url.split('/');
     const urlBasePath = paths[paths.length - 1];
     const optionIndex = urlBasePath.indexOf('?');
@@ -71,7 +72,8 @@ bot.on('message', async (msg) => {
                 userId,
                 path,
                 editMessageTextOptions,
-                downloadStartDate
+                downloadStartDate,
+                count,
             }));
         }).on('error', console.log)
     } catch (err) {

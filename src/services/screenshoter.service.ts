@@ -6,11 +6,12 @@ ffmpeg.setFfprobePath(ffprobeInstaller.path)
 
 
 export class Screenshoter {
-    static async take(path: string, fileName: string): Promise<string[]> {
-        return new Promise((res, rej) => {
+    static async take(path: string, fileName: string, count: number): Promise<string[]> {
+        return new Promise((res) => {
             let filenames: string[];
             ffmpeg(path).screenshots({
-                count: 4,
+                count,
+                size: '320x240',
                 filename: `${fileName}thumbnail-at-%s-seconds.jpeg`,
             }, './files/photos')
                 .on('error', console.log)
