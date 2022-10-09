@@ -1,10 +1,11 @@
 import { WriteStream } from "fs";
-import TelegramBot, { EditMessageTextOptions, InputMediaVideo } from "node-telegram-bot-api";
+import TelegramBot, { EditMessageTextOptions, InputMedia, InputMediaPhoto, InputMediaVideo } from "node-telegram-bot-api";
 import { MessageService } from "./message.service";
 import fs from 'fs';
 import { Mutex } from "async-mutex";
 import { PercentageService } from "./percentage.service";
 import { FileDeletorSerice } from "./file-deletor.service";
+import { Screenshoter } from "./screenshoter.sevice";
 
 export class UploadFileService {
     static async upload(fileStream: WriteStream, bot: TelegramBot, options: { fileName: string, userId: number, path: string, fileSize: number, editMessageTextOptions: EditMessageTextOptions }): Promise<void> {
@@ -29,12 +30,20 @@ export class UploadFileService {
             }
             release();
         });
+        const screenshotFiles = await Screenshoter.take(options.path, options.fileName);
+        const mediaGroup: InputMedia[] = [];
+        for(const screenshotFile of screenshotFiles) {
+            mediaGroup.push({
+                type: 'photo',
+                media: screenshotFile,
+            });
+        };
         const video: InputMediaVideo = { media: options.path, type: 'video', supports_streaming: true };
-        await bot.sendMediaGroup(options.userId, [video]);
-        // // @ts-ignore
-        // await bot.sendVideo(options.userId, readStream, { supports_streaming: true }).catch((err) => console.log(err.message));
+        mediaGroup.push(video);
+        await bot.sendMediaGroup(options.userId, mediaGroup);
         await MessageService.editText(bot, 'Uploaded: 100%', options.editMessageTextOptions);
         await MessageService.delete(bot, { userId: options.userId, messageId: options.editMessageTextOptions.message_id!.toString() }).catch((err) => console.log(err.message));
         FileDeletorSerice.video(options.path);
+        FileDeletorSerice.photos(screenshotFiles);
     };
 }
