@@ -9,7 +9,7 @@ export class Screenshoter {
     static async take(path: string, fileName: string): Promise<string[]> {
         return new Promise((res, rej) => {
             let filenames: string[];
-            ffmpeg(path).takeScreenshots({
+            ffmpeg(path).screenshots({
                 count: 4,
                 filename: `${fileName}thumbnail-at-%s-seconds.jpeg`,
             }, './files/photos')
