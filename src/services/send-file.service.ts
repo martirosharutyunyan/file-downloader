@@ -30,9 +30,8 @@ export class UploadFileService {
             release();
         });
         
-
         // @ts-ignore
-        await bot.sendVideo(options.userId, readStream, { supports_streaming: true }, { filename: fileName, contentType: '' }).catch((err) => console.log(err.message));
+        await bot.sendVideo(options.userId, readStream, { supports_streaming: true }).catch((err) => console.log(err.message));
         await MessageService.editText(bot, 'Uploaded: 100%', options.editMessageTextOptions);
         await MessageService.delete(bot, { userId: options.userId, messageId: options.editMessageTextOptions.message_id!.toString() }).catch((err) => console.log(err.message));
         FileDeletorSerice.video(options.path);
