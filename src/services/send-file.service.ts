@@ -7,11 +7,18 @@ import { PercentageService } from "./percentage.service";
 import { FileDeletorSerice } from "./file-deletor.service";
 import { Screenshoter } from "./screenshoter.service";
 
-export class UploadFileService {
-    static async upload(fileStream: WriteStream, bot: TelegramBot, options: { fileName: string, userId: number, path: string, fileSize: number, editMessageTextOptions: EditMessageTextOptions }): Promise<void> {
+export class SendFileService {
+    static async upload(fileStream: WriteStream, bot: TelegramBot, options: {
+        fileName: string,
+        downloadStartDate: Date,
+        userId: number,
+        path: string,
+        fileSize: number,
+        editMessageTextOptions: EditMessageTextOptions
+    }): Promise<void> {
         fileStream.close();
 
-        console.log('Download Completed: ', options.fileName);
+        console.log(`Download Completed: ${options.fileName} ${(+new Date() - +options.downloadStartDate) / 1000}s`);
         await MessageService.editText(bot, 'Downloaded: 100%', options.editMessageTextOptions);
         await MessageService.editText(bot, 'Uploaded: 0%', options.editMessageTextOptions);
 
@@ -30,9 +37,11 @@ export class UploadFileService {
             }
             release();
         });
+        const screenShotStartDate = new Date();
         const screenshotFiles = await Screenshoter.take(options.path, options.fileName);
+        console.log(`Screenshots done ${(+new Date() - +screenShotStartDate) / 1000}s`)
         const mediaGroup: InputMedia[] = [];
-        for(const screenshotFile of screenshotFiles) {
+        for (const screenshotFile of screenshotFiles) {
             mediaGroup.push({
                 type: 'photo',
                 media: `./files/photos/${screenshotFile}`,

@@ -6,9 +6,15 @@ import { MessageService } from './message.service';
 import { PercentageService } from './percentage.service';
 
 export class DownloadFileService {
-    static async download(bot: TelegramBot, res: IncomingMessage, options: { fileName: string, userId: number }): Promise<{fileStream: fs.WriteStream, fileSize: number, editMessageTextOptions: EditMessageTextOptions }> {
-        const path = `./files/videos/${options.fileName}`;
-        const fileStream = fs.createWriteStream(path);
+    static async download(bot: TelegramBot, res: IncomingMessage, options: {
+        path: string,
+        userId: number
+    }): Promise<{
+        fileStream: fs.WriteStream,
+        fileSize: number,
+        editMessageTextOptions: EditMessageTextOptions
+    }> {
+        const fileStream = fs.createWriteStream(options.path);
 
         const fileSize = Number(res.headers['content-length']);
         let downloadedSize = 0;
