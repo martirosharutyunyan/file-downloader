@@ -5,7 +5,7 @@ import https from 'https';
 import TelegramBot from 'node-telegram-bot-api';
 import { UserEntity } from './entities/user.entity';
 import { DownloadFileService } from './services/download-file.service';
-import { UploadFileService } from './services/send-file.service';
+import { SendFileService } from './services/send-file.service';
 
 dotenv.config();
 const BOT_TOKEN = process.env.BOT_TOKEN;
@@ -56,6 +56,7 @@ bot.on('message', async (msg) => {
     const adapter = url.startsWith('https') ? https : http;
     try {
         adapter.get(url, async (res) => {
+            const downloadStartDate = new Date();
             if (res.statusCode! >= 400) {
                 await bot.sendMessage(userId, `Failed code: ${res.statusCode!}`)
                 return;
@@ -63,8 +64,15 @@ bot.on('message', async (msg) => {
             await bot.deleteMessage(userId, msg.message_id.toString());
 
             const path = `./files/videos/${fileName}`;
-            const { fileStream, fileSize, editMessageTextOptions } = await DownloadFileService.download(bot, res, { fileName, userId });
-            fileStream.on('finish', () => UploadFileService.upload(fileStream, bot, { fileName, fileSize, userId, path, editMessageTextOptions }));
+            const { fileStream, fileSize, editMessageTextOptions } = await DownloadFileService.download(bot, res, { path, userId });
+            fileStream.on('finish', () => SendFileService.upload(fileStream, bot, {
+                fileName,
+                fileSize,
+                userId,
+                path,
+                editMessageTextOptions,
+                downloadStartDate
+            }));
         }).on('error', console.log)
     } catch (err) {
         await bot.sendMessage(userId, err.message);
