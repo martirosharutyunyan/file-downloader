@@ -89,7 +89,7 @@ bot.on('message', async (msg) => {
             fileStream.on('finish', async () => {
                 fileStream.close();
 
-                console.log('Download Completed');
+                console.log('Download Completed: ', fileName);
                 await editMessageText(bot, 'Downloaded: 100%' , editMessageOptions);
                 await editMessageText(bot, 'Uploaded: 0%' , editMessageOptions);
 
@@ -108,7 +108,8 @@ bot.on('message', async (msg) => {
                     }
                     release();
                 });
-                await bot.sendVideo(userId, readStream).catch((err) => console.log(err.message));
+                // @ts-ignore
+                await bot.sendVideo(userId, readStream, { supports_streaming: true }, { filename: fileName, contentType: '' }).catch((err) => console.log(err.message));
                 await editMessageText(bot, 'Uploaded: 100%', editMessageOptions);
                 await bot.deleteMessage(userId, message.message_id.toString()).catch((err) => console.log(err.message));
                 fs.unlink(path, (err) => {
