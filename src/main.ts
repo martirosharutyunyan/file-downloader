@@ -49,7 +49,7 @@ bot.on('message', async (msg) => {
     }
 
     const url = msg.text!.split(' ')[0];
-    const count = +msg.text!.split(' ')[1];
+    const count = isNaN(+msg.text!.split(' ')[1]) ? 1 : +msg.text!.split(' ')[1];
     const paths = url.split('/');
     const urlBasePath = paths[paths.length - 1];
     const optionIndex = urlBasePath.indexOf('?');
@@ -73,7 +73,7 @@ bot.on('message', async (msg) => {
                 path,
                 editMessageTextOptions,
                 downloadStartDate,
-                count: count ?? 1,
+                count,
             }));
         }).on('error', console.log)
     } catch (err) {
