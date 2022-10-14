@@ -34,7 +34,7 @@ export class SendFileService {
 
             if (PercentageService.get(uploadedSize, options.fileSize) >= percentage) {
                 await MessageService.editText(bot, `Uploaded: ${PercentageService.get(uploadedSize, options.fileSize)}%`, options.editMessageTextOptions);
-                percentage += 10;
+                percentage += 40;
             }
             release();
         });
