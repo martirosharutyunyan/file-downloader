@@ -1,9 +1,6 @@
 import { WriteStream } from "fs";
-import { Mutex } from "async-mutex";
-import fs from 'fs';
 import TelegramBot, { EditMessageTextOptions, InputMedia, InputMediaPhoto, InputMediaVideo } from "node-telegram-bot-api";
 import { MessageService } from "./message.service";
-import { PercentageService } from "./percentage.service";
 import { FileDeletorSerice } from "./file-deletor.service";
 import { Screenshoter } from "./screenshoter.service";
 
@@ -23,21 +20,6 @@ export class SendFileService {
         await MessageService.editText(bot, 'Downloaded: 100%', options.editMessageTextOptions);
         await MessageService.editText(bot, 'Uploaded: 0%', options.editMessageTextOptions);
 
-        const readStream = fs.createReadStream(options.path);
-        let uploadedSize = 0;
-        let percentage = 0;
-        const clientLock = new Mutex();
-        readStream.on('data', async (chunk) => {
-            const release = await clientLock.acquire();
-            const chunkSize = Buffer.byteLength(chunk);
-            uploadedSize += chunkSize;
-
-            if (PercentageService.get(uploadedSize, options.fileSize) >= percentage) {
-                await MessageService.editText(bot, `Uploaded: ${PercentageService.get(uploadedSize, options.fileSize)}%`, options.editMessageTextOptions);
-                percentage += 25;
-            }
-            release();
-        });
         const screenShotStartDate = new Date();
         const screenshotFiles = await Screenshoter.take(options.path, options.fileName, options.count);
         console.log(`Screenshots done ${(+new Date() - +screenShotStartDate) / 1000}s`);

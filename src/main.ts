@@ -6,6 +6,7 @@ import TelegramBot from 'node-telegram-bot-api';
 import { UserEntity } from './entities/user.entity';
 import { DownloadFileService } from './services/download-file.service';
 import { SendFileService } from './services/send-file.service';
+import {EventService} from "./services/event.service";
 
 dotenv.config();
 const BOT_TOKEN = process.env.BOT_TOKEN;
@@ -16,7 +17,7 @@ const bot = new TelegramBot(BOT_TOKEN!, { baseApiUrl: TELEGRAM_BASE_URL });
 
 const users: UserEntity[] = [new UserEntity(ADMIN_ID, 'Martiros')];
 
-bot.on('message', async (msg) => {
+const getMessage = async (msg) => {
     const text = msg.text!;
     const userId = msg.chat.id;
     const user = users.find((user) => user.userId === userId);
@@ -54,7 +55,7 @@ bot.on('message', async (msg) => {
     const paths = url.split('/');
     const urlBasePath = paths[paths.length - 1];
     const optionIndex = urlBasePath.indexOf('?');
-    const fileName = urlBasePath.slice(0, optionIndex);
+    const fileName = String(+new Date()) + urlBasePath.slice(0, optionIndex);
     const adapter = url.startsWith('https') ? https : http;
     try {
         adapter.get(url, async (res) => {
@@ -80,6 +81,10 @@ bot.on('message', async (msg) => {
     } catch (err) {
         await bot.sendMessage(userId, err.message);
     }
+};
+const eventService = new EventService();
+bot.on('message', async (msg) => {
+    eventService.push(getMessage.bind(null, msg));
 });
 
 bot

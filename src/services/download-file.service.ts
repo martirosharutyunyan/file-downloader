@@ -15,7 +15,7 @@ export class DownloadFileService {
         editMessageTextOptions: EditMessageTextOptions
     }> {
         const fileStream = fs.createWriteStream(options.path);
-
+        fileStream.on("error", console.log)
         const fileSize = Number(res.headers['content-length']);
         let downloadedSize = 0;
         let percentage = 0;
