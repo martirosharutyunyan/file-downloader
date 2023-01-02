@@ -1,7 +1,9 @@
 export class ParallelService {
-    static async run(tasks: Promise<void>[]) {
+    static async run(tasks: Array<() => Promise<void>>) {
+            const taskPromises: Array<Promise<any>> = [];
             for (const task of tasks) {
-                task.then().catch(err => { throw err });
+                taskPromises.push(task())
             }
+            await Promise.all(taskPromises);
     }
 }

@@ -9,11 +9,11 @@ import { SendFileService } from './services/send-file.service';
 import {EventService} from "./services/event.service";
 
 dotenv.config();
-const BOT_TOKEN = process.env.BOT_TOKEN;
+const BOT_TOKEN = process.env.BOT_TOKEN!;
 const PASSWORD_HASH = process.env.PASSWORD_HASH!;
 const TELEGRAM_BASE_URL = process.env.TELEGRAM_BASE_URL;
 const ADMIN_ID = Number(process.env.ADMIN_ID);
-const bot = new TelegramBot(BOT_TOKEN!, { baseApiUrl: TELEGRAM_BASE_URL });
+const bot = new TelegramBot(BOT_TOKEN, { baseApiUrl: TELEGRAM_BASE_URL });
 
 const users: UserEntity[] = [new UserEntity(ADMIN_ID, 'Martiros')];
 
